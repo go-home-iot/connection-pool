@@ -9,7 +9,6 @@ import (
 type Config struct {
 	Name          string
 	Size          int
-	Address       string
 	RetryDuration time.Duration
 	NewConnection func(Config) (net.Conn, error)
 }
