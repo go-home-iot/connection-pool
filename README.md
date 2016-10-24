@@ -11,7 +11,7 @@ go get github.com/go-home-iot/connection-pool
 
 ##Package
 ```go
-import "github.com/go-home-iot/connection-pool"
+import "github.com/go-home-iot/pool"
 ```
 
 ##Usage
