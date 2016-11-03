@@ -81,13 +81,13 @@ func TestGetReturnsConnectionsAndErrsOnTimeout(t *testing.T) {
 
 	// Should be able to call Get 3 times, then timeout and get error on 4th
 	for i := 0; i < p.Config.Size; i++ {
-		c, err := p.Get(time.Second)
+		c, err := p.Get(time.Second, false)
 		require.Nil(t, err)
 		require.NotNil(t, c)
 	}
 
 	start := time.Now()
-	c, err := p.Get(time.Millisecond)
+	c, err := p.Get(time.Millisecond, false)
 	end := time.Now()
 
 	require.Nil(t, c)
@@ -107,17 +107,17 @@ func TestCloseReturnsTheConnectionToThePool(t *testing.T) {
 	done := p.Init()
 	<-done
 
-	c1, err := p.Get(time.Millisecond)
+	c1, err := p.Get(time.Millisecond, false)
 	require.NotNil(t, c1)
 	require.Nil(t, err)
 
 	// Second call should have run out of connections
-	c, err := p.Get(time.Millisecond)
+	c, err := p.Get(time.Millisecond, false)
 	require.Equal(t, err, pool.ErrTimeout)
 	require.Nil(t, c)
 
 	p.Release(c1)
-	c2, err := p.Get(time.Millisecond)
+	c2, err := p.Get(time.Millisecond, false)
 	require.NotNil(t, c2)
 	require.Nil(t, err)
 	require.Equal(t, c1, c2)
@@ -136,7 +136,7 @@ func TestBadConnectionNotReturnedToThePool(t *testing.T) {
 	done := p.Init()
 	<-done
 
-	c1, err := p.Get(time.Millisecond)
+	c1, err := p.Get(time.Millisecond, false)
 	require.NotNil(t, c1)
 	require.Nil(t, err)
 
@@ -144,7 +144,7 @@ func TestBadConnectionNotReturnedToThePool(t *testing.T) {
 	c1.IsBad = true
 	p.Release(c1)
 
-	c2, err := p.Get(time.Millisecond * 100)
+	c2, err := p.Get(time.Millisecond*100, false)
 	require.NotNil(t, c2)
 	require.Nil(t, err)
 	require.NotEqual(t, c1, c2)
