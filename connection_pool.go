@@ -88,14 +88,15 @@ func (p *ConnectionPool) Get(timeout time.Duration, flush bool) (*Connection, er
 	}
 }
 
-// Release returns the connection back to the pool. Is the connections IsBad field has been
-// set to true, the pool throws the connection away and attempts to create a new one
-func (p *ConnectionPool) Release(c *Connection) {
+// Release returns the connection back to the pool. err is any error that was returned
+// by the connection while it was being used, if there was an error the pool will then
+// throw this connection away and create a new one
+func (p *ConnectionPool) Release(c *Connection, err error) {
 	if c == nil {
 		return
 	}
 
-	if c.IsBad {
+	if err != nil {
 		p.retryNewConnection(nil)
 		return
 	}

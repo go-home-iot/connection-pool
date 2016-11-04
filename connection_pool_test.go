@@ -116,7 +116,7 @@ func TestCloseReturnsTheConnectionToThePool(t *testing.T) {
 	require.Equal(t, err, pool.ErrTimeout)
 	require.Nil(t, c)
 
-	p.Release(c1)
+	p.Release(c1, nil)
 	c2, err := p.Get(time.Millisecond, false)
 	require.NotNil(t, c2)
 	require.Nil(t, err)
@@ -141,13 +141,12 @@ func TestBadConnectionNotReturnedToThePool(t *testing.T) {
 	require.Nil(t, err)
 
 	newCalled = false
-	c1.IsBad = true
-	p.Release(c1)
+	p.Release(c1, errors.New(""))
 
 	c2, err := p.Get(time.Millisecond*100, false)
 	require.NotNil(t, c2)
 	require.Nil(t, err)
-	require.NotEqual(t, c1, c2)
+	require.False(t, c1 == c2)
 	require.True(t, newCalled)
 }
 
